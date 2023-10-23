@@ -1,16 +1,12 @@
-import './App.css'
-import React, { useReducer, useEffect } from 'react'
-import Box from './Box.jsx'
-
-
 export default function App() {
+  /*
   const [boxArray, setBoxArray] = React.useState([...Array(64)].map((_, i) => ({
     key: i,
     isClicked: false,
     index: i,
-    isMine: false,
-    numOfMines: 0
+    isMine: false
   })));
+  */
 /*
   let boxArray = [...Array(64)].map((_, i) =>
     <Box
@@ -30,18 +26,17 @@ export default function App() {
     isMine: false
   }))
 */
-
+/*
   function handleClick(i) {
     const newBoxArray = [...boxArray];
     newBoxArray[i].isClicked = true;
     setBoxArray(newBoxArray);
-    console.log(boxArray[i])
   }
-/*
+
 function trythis(box){
   box.isClicked = true
   console.log(box.isClicked)
-}*/
+}
 
 React.useEffect(() => {
   function assignMines() {
@@ -49,31 +44,52 @@ React.useEffect(() => {
     while(indices.size < 10) {
       indices.add(Math.floor(Math.random() * 64));
     }
-    console.log(indices)
     const newBoxArray = [...boxArray];
     indices.forEach(index => {
       newBoxArray[index].isMine = true;
     });
     setBoxArray(newBoxArray);
-  }
+/*
+    indices.forEach(index => {
+      boxArray[index].isMine = true;
+    });
+    console.log(indices)*/
+  //}
+/*
   assignMines();
-  
-  const newBoxArrayAfterMines = [...boxArray];
-  for (let i = 0; i < newBoxArrayAfterMines.length; i++){
-    let arr = [-9,-8,-7,-1,1,7,8,9];
-    let num = 0;
-    arr.forEach((x,index) => {
-      if(newBoxArrayAfterMines[i + x] === undefined){
-        return;
+}, []);
+*/
+
+const initialState = [...Array(64)].map((_, i) => ({
+  key: i,
+  isClicked: false,
+  index: i,
+  isMine: false
+}));
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'click':
+      return state.map((box, i) => 
+        i === action.index ? { ...box, isClicked: true } : box
+      );
+    case 'assignMines':
+      let indices = new Set();
+      while(indices.size < 10) {
+        indices.add(Math.floor(Math.random() * 64));
       }
-      if (newBoxArrayAfterMines[i + x].isMine){
-        num += 1
-      }
-    })
-    newBoxArrayAfterMines[i].numOfMines = num;
-    num = 0;
+      return state.map((box, i) => 
+        indices.has(i) ? { ...box, isMine: true } : box
+      );
+    default:
+      return state;
   }
-  setBoxArray(newBoxArrayAfterMines);
+}
+
+const [boxArray, dispatch] = useReducer(reducer, initialState);
+
+useEffect(() => {
+  dispatch({ type: 'assignMines' });
 }, []);
 
 
@@ -89,9 +105,8 @@ React.useEffect(() => {
               //click={box.click.bind(box)}
               //trial={box.trial.bind(box)}
               isMine={box.isMine}
-              numOfMines={box.numOfMines}
-              onClick={() => handleClick(i)}
-              />
+              //onClick={() => handleClick(i)}
+              dispatch={dispatch}/>
           )}
         </div>
       </div>

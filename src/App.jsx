@@ -1,6 +1,7 @@
 import './App.css'
 import React, { useReducer, useEffect } from 'react'
 import Box from './Box.jsx'
+import GameOver from './GameOver.jsx'
 
 
 export default function App() {
@@ -11,6 +12,7 @@ export default function App() {
     isMine: false,
     numOfMines: 0
   })));
+  const [gameOver, setGameOver] = React.useState(false);
 /*
   let boxArray = [...Array(64)].map((_, i) =>
     <Box
@@ -35,6 +37,9 @@ export default function App() {
     const newBoxArray = [...boxArray];
     newBoxArray[i].isClicked = true;
     setBoxArray(newBoxArray);
+    if (newBoxArray[i].isClicked && newBoxArray[i].isMine){
+      setGameOver(true)
+    }
     console.log(boxArray[i])
   }
 /*
@@ -104,7 +109,7 @@ React.useEffect(() => {
   return (
     <main>
       <div className='page'>
-        <div className='game-container'>
+        {!gameOver && <div className='game-container'>
           {boxArray.map((box, i) => 
             <Box
               key={box.key}
@@ -117,8 +122,10 @@ React.useEffect(() => {
               onClick={() => handleClick(i)}
               />
           )}
-        </div>
+        </div>}
+        {gameOver && <GameOver />}
       </div>
+      
     </main>
   )
 }

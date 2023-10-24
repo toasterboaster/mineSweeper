@@ -62,6 +62,29 @@ React.useEffect(() => {
   for (let i = 0; i < newBoxArrayAfterMines.length; i++){
     let arr = [-9,-8,-7,-1,1,7,8,9];
     let num = 0;
+    let left = [0,8,16,24,32,40,48,56];
+    let right = [7,15,23,31,39,47,55,63];
+    let leftArr = [-8,-7,1,8,9];
+    let rightArr = [-9,-8,-1,7,8];
+    if (left.includes(i)){
+      leftArr.forEach((x) => {
+        if(newBoxArrayAfterMines[i + x] === undefined){
+          return;
+        }
+        if (newBoxArrayAfterMines[i + x].isMine){
+          num += 1
+        }
+      })
+    } else if (right.includes(i)){
+      rightArr.forEach((x) => {
+        if(newBoxArrayAfterMines[i + x] === undefined){
+          return;
+        }
+        if (newBoxArrayAfterMines[i + x].isMine){
+          num += 1
+        }
+      })
+    } else {
     arr.forEach((x,index) => {
       if(newBoxArrayAfterMines[i + x] === undefined){
         return;
@@ -70,6 +93,7 @@ React.useEffect(() => {
         num += 1
       }
     })
+    }
     newBoxArrayAfterMines[i].numOfMines = num;
     num = 0;
   }

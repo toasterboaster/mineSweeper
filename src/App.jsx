@@ -10,7 +10,8 @@ export default function App() {
     isClicked: false,
     index: i,
     isMine: false,
-    numOfMines: 0
+    numOfMines: 0,
+    isFlagged: false
   })));
   const [gameOver, setGameOver] = React.useState(false);
 /*
@@ -33,7 +34,7 @@ export default function App() {
   }))
 */
 
-  function handleClick(i) {
+  function handleClick(i,event) {
     const newBoxArray = [...boxArray];
     newBoxArray[i].isClicked = true;
     setBoxArray(newBoxArray);
@@ -105,11 +106,18 @@ React.useEffect(() => {
   setBoxArray(newBoxArrayAfterMines);
 }, []);
 
+const handleContextMenu = (i,event) => {
+    event.preventDefault(); // Prevent the default context menu from appearing
+  const newBoxArray = [...boxArray];
+  newBoxArray[i].isFlagged = !newBoxArray[i].isFlagged;
+  setBoxArray(newBoxArray);
+    console.log(newBoxArray[i]);
+  }
 
   return (
     <main>
       <div className='page'>
-        {!gameOver && <div className='game-container'>
+        <div className='game-container'>
           {boxArray.map((box, i) => 
             <Box
               key={box.key}
@@ -119,11 +127,13 @@ React.useEffect(() => {
               //trial={box.trial.bind(box)}
               isMine={box.isMine}
               numOfMines={box.numOfMines}
-              onClick={() => handleClick(i)}
+              onClick={(event) => handleClick(i,event)}
+              isFlagged={box.isFlagged}
+              onContextMenu={(event) => handleContextMenu(i,event)}
               />
           )}
-        </div>}
-        {gameOver && <GameOver />}
+        </div>
+        {gameOver && <GameOver/>}
       </div>
       
     </main>

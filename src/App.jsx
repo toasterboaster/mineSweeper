@@ -14,41 +14,32 @@ export default function App() {
     isFlagged: false
   })));
   const [gameOver, setGameOver] = React.useState(false);
-/*
-  let boxArray = [...Array(64)].map((_, i) =>
-    <Box
-      key={i}
-      isClicked={false}
-      index={i}
-      click={() => { console.log(i) }} />
-  )
-*/
-  /*
-  let boxArray = [...Array(64)].map((_, i) => ({
-    key: i,
-    isClicked: false,
-    index: i,
-    click: function () {console.log(this.isMine) },
-    trial: function () {trythis(this)},
-    isMine: false
-  }))
-*/
+  const [restart, setRestart] = React.useState(false);
+
 
   function handleClick(i,event) {
     const newBoxArray = [...boxArray];
     newBoxArray[i].isClicked = true;
     setBoxArray(newBoxArray);
+    if (newBoxArray[i].numOfMines == 0){
+      checkZeros(i, newBoxArray)
+    }
     if (newBoxArray[i].isClicked && newBoxArray[i].isMine){
       setGameOver(true)
     }
     console.log(boxArray[i])
+    console.log(i)
   }
-/*
-function trythis(box){
-  box.isClicked = true
-  console.log(box.isClicked)
-}*/
 
+  function checkZeros(currentBox, boxArray){
+    let arr = [-9,-8,-7,-1,1,7,8,9];
+    arr.forEach(index => {
+      if (boxArray[currentBox + index].numOfMines == 0){
+        boxArray[currentBox + index].isClicked = true
+      }
+    })
+  }
+  
 React.useEffect(() => {
   function assignMines() {
     let indices = new Set();
@@ -104,7 +95,7 @@ React.useEffect(() => {
     num = 0;
   }
   setBoxArray(newBoxArrayAfterMines);
-}, []);
+}, [restart]);
 
 const handleContextMenu = (i,event) => {
     event.preventDefault(); // Prevent the default context menu from appearing
@@ -113,6 +104,19 @@ const handleContextMenu = (i,event) => {
   setBoxArray(newBoxArray);
     console.log(newBoxArray[i]);
   }
+
+function restartGame(){
+  setBoxArray([...Array(64)].map((_, i) => ({
+    key: i,
+    isClicked: false,
+    index: i,
+    isMine: false,
+    numOfMines: 0,
+    isFlagged: false
+  })));
+  setGameOver(false);
+  setRestart(prevState => !prevState); // Toggle the restart state to trigger useEffect
+}
 
   return (
     <main>
@@ -123,8 +127,6 @@ const handleContextMenu = (i,event) => {
               key={box.key}
               isClicked={box.isClicked}
               index={box.index}
-              //click={box.click.bind(box)}
-              //trial={box.trial.bind(box)}
               isMine={box.isMine}
               numOfMines={box.numOfMines}
               onClick={(event) => handleClick(i,event)}
@@ -133,7 +135,8 @@ const handleContextMenu = (i,event) => {
               />
           )}
         </div>
-        {gameOver && <GameOver/>}
+        {gameOver && <GameOver
+                       restart={restartGame}/>}
       </div>
       
     </main>
